@@ -25,7 +25,7 @@ class symcli_client(object):
     self.sid = sid
 
   
-  def sg_list(self):
+  def get_sgnames(self):
     """ return list of storage groups """
     sgnames = []
     symsg = Popen(['symsg', '-sid', self.sid, 'list'], stdout=PIPE)
@@ -34,9 +34,16 @@ class symcli_client(object):
     for elem in sgtree.getiterator('SG'):
       sgnames.append(elem.find('SG_Info/name').text)
     return sgnames
+
+
+  def get_dict_name_tdevs(self):
+    """ return a dictionary of device name:tdev name """
+    tdevs_names = {}
+    pass
+    # TODO
     
 
-  def get_sg_tdevs(self,sgname):
+  def get_tdevs_in_sg(self,sgname):
     """ return list of tdevs in storage group """
     tdevs = []
     symdev = Popen(['symdev', '-sid', self.sid, 'list', '-sg',  sgname], stdout=PIPE)
@@ -60,7 +67,7 @@ class symcli_client(object):
     return tdev_sizes
 
 
-  def get_tdev_dev_name(self,dev_name):
+  def get_tdev_name(self,dev_name):
     """ return tdev device name """
     symdev = Popen(['symdev', '-sid', self.sid, 'list', '-identifier', 'device_name', '-devs', dev_name], stdout=PIPE)
     symdev_xml = ''.join(symdev.stdout.readlines())
