@@ -35,11 +35,15 @@ class symcli_client(object):
     return sgnames
     
 
-  def sg_show(self,sgname):
-    """ show storage groups information """
-    symsg = Popen(['symsg', '-sid', self.sid, 'show', sgname], stdout=PIPE, stderr=PIPE)
-    stdout,stderr = symsg.communicate()
-    print stdout or stderr
+  def get_sg_tdevs(self,sgname):
+    """ return list of tdevs in storage group """
+    tdevs = []
+    symdev = Popen(['symdev', '-sid', self.sid, 'list', '-sg',  sgname], stdout=PIPE)
+    symdev_xml = ''.join(symdev.stdout.readlines())
+    tdevtree = ET.fromstring(symdev_xml)
+    for elem in tdevtree.getiterator('Device'):
+      tdevs.append(elem.find('Dev_Info/dev_name').text)
+    return tdevs
 
  
   def sg_create(self,sgname): 
@@ -49,23 +53,21 @@ class symcli_client(object):
     print stdout or stderr
 
 
-  def list_devs_by_name(self):
-    """ list sym devices by device_name """
-    symdev = Popen(['symdev', '-sid', self.sid, 'list', '-identifier', 'device_name'], stdout=PIPE, stderr=PIPE)
-    stdout,stderr = symdev.communicate()
-    print stdout or stderr
- 
-
-  def create_tdev(self,sgname,tdev_name,size):
+  def create_tdev_in_sg(self,sgname,tdev_name,size):
     """ create a tdev and add it to a storage group, size should be in MB """
     symconf = Popen(['symconfigure', '-sid', array_id, '-cmd', "create dev count=1,size=" + size + "mb,config=tdev,emulation=fba,preallocate size=all,sg=" + sg_name + ",device_name=" + tdev_name + ";", 'commit', '-nop'])
     stdout,stderr = symconf.communicate()
     print stdout or stderr
 
 
-  def get_tdev_size(self,symid):
-    """ get the size of a tdev given it's symid """
-    symdev = Popen(['symdev', '-sid', self.sid, 'list', '-identifier', '-devs', symid], stdout=PIPE, stderr=PIPE)
-    stdout,stderr = symconf.communicate()
-    print stdout or stderr
-    
+  def get_tdev_size(self,dev_name):
+    """ return tdev size as list. Sizes in MB, GB, TB. """
+    tdev_sizes = []
+    symdev = Popen(['symdev', '-sid', self.sid, 'list', '-devs', dev_name], stdout=PIPE, stderr=PIPE)
+    symdev_xml = ''.join(symdev.stdout.readlines())
+    tdevtree = ET.fromstring(symdev_xml)
+    for elem in tdevtree.getiterator('Capacity'):
+      tdev_sizes.append(elem.find('megabytes').text)
+      tdev_sizes.append(elem.find('gigabytes').text)
+      tdev_sizes.append(elem.find('terabytes').text)
+    return tdev_sizes
