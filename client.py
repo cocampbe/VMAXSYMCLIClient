@@ -26,13 +26,13 @@ class symcli_client(object):
   
   def sg_list(self):
     """ return list of storage groups """
-    sgs = []
+    sgnames = []
     symsg = Popen(['symsg', '-sid', self.sid, 'list'], stdout=PIPE)
     symsg_xml = ''.join(symsg.stdout.readlines())
     sgtree = ET.fromstring(symsg_xml)
     for elem in sgtree.getiterator('SG'):
-      sgs.append(elem.find('SG_Info/name').text)
-    return sgs
+      sgnames.append(elem.find('SG_Info/name').text)
+    return sgnames
     
 
   def sg_show(self,sgname):
