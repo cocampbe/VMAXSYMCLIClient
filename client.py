@@ -31,7 +31,7 @@ class symcli_client(object):
     symsg_xml = ''.join(symsg.stdout.readlines())
     sgtree = ET.fromstring(symsg_xml)
     for elem in sgtree.getiterator('SG'):
-      sgs.append = elem.find('SG_Info/name').text
+      sgs.append(elem.find('SG_Info/name').text)
     return sgs
     
 
