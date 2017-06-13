@@ -3,7 +3,7 @@
 This class provides a small number of usueful methods for VMAX arrays.
 My primary use has been for taking snapshots of storage groups.
 
-## Getting started
+## Usage 
 ...
 import client
 
