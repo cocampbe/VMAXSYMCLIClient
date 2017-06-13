@@ -1,6 +1,6 @@
 # VMAXSYMCLIClient
 
-This class provides a small number of usueful methods for VMAX arrays.
+This is a small symcli client for EMC VMAX.
 My primary use has been for taking snapshots of storage groups.
 
 ## Usage 
